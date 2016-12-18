@@ -35,7 +35,7 @@ class UsersController extends Controller
 
     public function logoutAction()
     {
-
+        $this->session->destroy();
     }
 
     public function fakeloginAction()
