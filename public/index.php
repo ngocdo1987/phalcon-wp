@@ -16,6 +16,7 @@ $loader = new Loader();
 $loader->registerDirs(
     [
         "../app/controllers/",
+        "../app/controllers/admin/",
         "../app/models/",
     ]
 );
@@ -34,6 +35,7 @@ $di->set(
         $view = new View();
 
         $view->setViewsDir("../app/views/");
+        //$view->setViewsDir("../app/views/admin/");
 
         return $view;
     }
@@ -45,7 +47,7 @@ $di->set(
     function () {
         $url = new UrlProvider();
 
-        $url->setBaseUri("/FW/PHALCON/");
+        $url->setBaseUri("/");
 
         return $url;
     }
