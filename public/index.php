@@ -7,7 +7,8 @@ use Phalcon\Mvc\Application;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\Url as UrlProvider;
 use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
-
+use Phalcon\Mvc\Dispatcher;
+use Phalcon\Session\Adapter\Files as Session;
 
 
 // Register an autoloader
@@ -66,6 +67,56 @@ $di->set(
             ]
         );
     }
+);
+
+// Start the session the first time when some component request the session service
+$di->setShared(
+    "session",
+    function () {
+        $session = new Session();
+
+        $session->start();
+
+        return $session;
+    }
+);
+
+// Handle errors
+$di->set(
+    'dispatcher',
+    function() use ($di) {
+        $eventsManager = $di->getShared('eventsManager');
+        $eventsManager->attach(
+            'dispatch:beforeException',
+            function($event, $dispatcher, $exception) {
+                switch ($exception->getCode()) {
+                    case Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
+                    case Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
+                        $dispatcher->forward(
+                            array(
+                                'controller' => 'error',
+                                'action' => 'notFound',
+                            )
+                        );
+                        return false;
+                        break; // for checkstyle
+                    default:
+                        $dispatcher->forward(
+                            array(
+                                'controller' => 'error',
+                                'action' => 'uncaughtException',
+                            )
+                        );
+                        return false;
+                        break; // for checkstyle
+                }
+            }
+        );
+        $dispatcher = new Dispatcher();
+        $dispatcher->setEventsManager($eventsManager);
+        return $dispatcher;
+    },
+    true
 );
 
 $application = new Application($di);

@@ -6,7 +6,7 @@ class IndexController extends Controller
 {
     public function initialize()
     {
-        $this->view->setTemplateAfter("admin");
+        //$this->view->setTemplateAfter("admin");
     }
 
     public function indexAction()
