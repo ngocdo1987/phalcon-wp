@@ -36,7 +36,7 @@ class UsersController extends Controller
     public function logoutAction()
     {
         $this->session->destroy();
-        die('lol');
+        die('lol123');
     }
 
     public function fakeloginAction()
